@@ -21,7 +21,6 @@
       };
     };
   };
-  programs.git-credential-oauth.enable = true;
 
   programs.firefox.enable = true;
 }
