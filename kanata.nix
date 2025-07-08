@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 {
   boot.kernelModules = [ "uinput" ];
 
@@ -8,7 +8,7 @@
     KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"
   '';
 
-  # Ensure the uinput group exists
+  # Ensure the uinput group exists.
   users.groups.uinput = { };
 
   systemd.services.kanata-Jezzlappy.serviceConfig = {

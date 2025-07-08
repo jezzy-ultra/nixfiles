@@ -1,4 +1,4 @@
-{ config, lib, pkgs, attrs, ... }:
+{ pkgs, attrs, ... }:
 {
   imports = [
     ./hardware-configuration.nix  # results of the hardware scan
@@ -37,7 +37,10 @@
   };
 
   environment.variables = {
-    FREETYPE_PROPERTIES = "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
+    # Improve the font rendering in some applications
+    # (e.g. Chromium/Electron).
+    FREETYPE_PROPERTIES =
+      "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
   };
   environment.sessionVariables = {
     XDG_CACHE_HOME = "$HOME/.cache";
@@ -46,9 +49,7 @@
     XDG_STATE_HOME = "$HOME/.local/state";
   };
 
-  #services.openssh.enable = true;
-
-  services.xserver.enable = true;
+  #services.xserver.enable = true;
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
   services.xserver.xkb = {
@@ -70,6 +71,8 @@
     #media-session.enable = true;
   };
 
+  #services.openssh.enable = true;
+
   # Enable touchpad support (enabled by default in most desktop managers).
   #services.xserver.libinput.enable = true;
 
@@ -80,11 +83,13 @@
   #  enableSSHSupport = true;
   #};
 
+  programs.dconf.enable = true;
+
   nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search <package>
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [  ];
 
   # Don't forget to set a password with `passwd`.
   users.users.${attrs.username} = {
@@ -93,6 +98,15 @@
     extraGroups = [
       "wheel"  # sudo
       "networkmanager"
+    ];
+  };
+
+  fonts = {
+    enableDefaultPackages = true;
+    packages = with pkgs; [
+      noto-fonts
+      noto-fonts-emoji
+      nerd-fonts.jetbrains-mono
     ];
   };
 }
