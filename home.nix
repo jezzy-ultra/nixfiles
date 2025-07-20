@@ -1,15 +1,158 @@
-{ lib, pkgs, attrs, ... }:
+{ config, lib, pkgs, attrs, ... }:
 {
-  home.stateVersion = attrs.stateVersion;
-
-  home.username = attrs.username;
-  home.homeDirectory = "/home/" + attrs.username;
-
+  home = {
+    inherit (attrs) stateVersion username;
+    homeDirectory = "/home/" + attrs.username;
+  };
   home.packages = with pkgs; [
-    gnome-tweaks
+    gtrash
+    vivaldi
   ];
 
-  programs.firefox.enable = true;
+  wayland.windowManager.hyprland = {
+    enable = true;
+
+    # Use the packages from our NixOS module.
+    package = null;
+    portalPackage = null;
+
+    systemd.variables = [ "--all" ];
+  };
+  xdg.configFile."uwsm/env".source = ''
+    ${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh
+  '';
+
+  programs.nh = {
+    enable = true;
+    flake = "/home/${attrs.username}/code/nixfiles";
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 7d --keep 3";
+    };
+  };
+
+  programs.eza = {
+    enable = true;
+
+    # Disable shell integration to manage aliases ourselves.
+    enableFishIntegration = false;
+  };
+
+  programs.fzf = {
+    enable = true;
+  };
+
+  programs.zoxide = {
+    enable = true;
+    options = [ "--cmd cd" ];
+  };
+
+  programs.fd = {
+    enable = true;
+  };
+
+  programs.ripgrep = {
+    enable = true;
+  };
+
+  programs.ripgrep-all = {
+    enable = true;
+  };
+
+  programs.bat = {
+    enable = true;
+  };
+
+  programs.fish = {
+    enable = true;
+    shellAliases = let
+      eza = lib.concatStringsSep " " [
+        "eza"
+        "--color=always"
+        "--icons=always"
+        "--git"
+        "--long"
+        "--no-permissions"
+        "--octal-permissions"
+        "--group-directories-first"
+        "--classify=always"
+        "--hyperlink"
+        "--mounts"
+        "--follow-symlinks"
+        "--smart-group"
+        "--time-style=+'%Y-%m-%dx\n%m-%d %H:%M'"
+      ];
+    in {
+      ls = eza;
+      la = eza + " --all";
+      lt = eza + " --tree";
+      lta = eza + " --all --tree";
+    };
+  };
+  # Use fish as the default interactive shell while keeping
+  # the login shell POSIX-compliant for compatibility reasons.
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      if [[ $- == *i* && -z "$NO_FISH_BASH" ]]; then
+        exec ${pkgs.fish}/bin/fish
+      fi
+    '';
+  };
+  # Avoid endlessly looping from bash -> fish -> bash -> ...
+  programs.fish.functions.bash = {
+    description = "Start bash (without automatically re-entering fish).";
+    body = ''
+      NO_FISH_BASH="1" command bash $argv
+    '';
+    wraps = "bash";
+  };
+
+  programs.ghostty = {
+    enable = true;
+    installBatSyntax = true;
+    installVimSyntax = true;
+
+    settings = {
+      theme = "cutiepro";
+    };
+    themes = {
+      cutiepro = {
+        palette = [
+          "00=#000000"  # ANSI 00 -- black
+          "01=#fb5858"  # ANSI 01 -- red
+          "02=#e6c56e"  # ANSI 02 -- green
+          "03=#ff8358"  # ANSI 03 -- yellow
+          "04=#d884ba"  # ANSI 04 -- blue
+          "05=#ff40a0"  # ANSI 05 -- magenta
+          "06=#55afe6"  # ANSI 06 -- cyan
+          "07=#d5d0c9"  # ANSI 07 -- white
+          "08=#88847f"  # ANSI 08 -- bright black
+          "09=#ff9797"  # ANSI 09 -- bright red
+          "10=#ffe08e"  # ANSI 10 -- bright green
+          "11=#ffaa77"  # ANSI 11 -- bright yellow
+          "12=#ffa2dd"  # ANSI 12 -- bright blue
+          "13=#ff6dc4"  # ANSI 13 -- bright magenta
+          "14=#a0c3f2"  # ANSI 14 -- bright cyan
+          "15=#ffffff"  # ANSI 15 -- bright white
+        ];
+        background = "#1c1b1a";
+        foreground = "#d5d0c9";
+        selection-background = "#383838";
+        selection-foreground = "#e5a1a3";
+        cursor-color = "#e5a1a3";
+      };
+    };
+  };
+
+  programs.kitty = {
+    enable = true;
+    #font = {
+    #  # Use the package from our NixOS module.
+    #  package = null;
+    #  name = "JetBrainsMono Nerd Font";
+    #};
+  };
 
   programs.git = {
     enable = true;
@@ -26,109 +169,58 @@
     };
   };
 
-  programs.vesktop.enable = true;
+  programs.git.delta = {
+    enable = true;
+  };
 
-  dconf.settings =
-  let
-    inherit (lib.hm.gvariant) 
-      mkDouble mkTuple mkUint32 mkVariant mkDictionaryEntry;
-    weather-locations = [
-      (mkVariant (mkTuple [
-        (mkUint32 2)
-        (mkVariant (mkTuple [
-          "Tampere"
-          "EFTP"
-          true
-          [ (mkTuple [
-              (mkDouble "1.0719230547509482")
-              (mkDouble "0.41160680944423184")
-          ])]
-          [ (mkTuple [
-              (mkDouble "1.0733774899765127")
-              (mkDouble "0.41451569734865329")
-          ])]
-        ]))
-      ]))
-      (mkVariant (mkTuple [
-        (mkUint32 2)
-        (mkVariant (mkTuple [
-          "Seattle-Tacoma International Airport"
-          "KSEA"
-          false
-          [ (mkTuple [
-              (mkDouble "0.82806661159338912")
-              (mkDouble "-2.134775231953554")
-          ])]
-          [ ]
-        ]))
-      ]))
-    ];
-  in {
-    "org/gnome/desktop/input-sources" = {
-      xkb-options = [
-        "lv3:menu_switch"
-        "compose:ralt"
-      ];
-    };
-    "org/gnome/desktop/background" = {
-      picture-uri
-        = "file:///run/current-system/sw/share/backgrounds/gnome/fold-l.jxl";
-      picture-uri-dark
-        = "file:///run/current-system/sw/share/backgrounds/gnome/fold-d.jxl";
-      primary-color = "#26a269";
-    };
-    "org/gnome/desktop/screensaver" = {
-      picture-uri
-        = "file:///run/current-system/sw/share/backgrounds/gnome/fold-l.jxl";
-      primary-color = "#26a269";
-    };
-    "org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
-    };
-    "org/gnome/settings-daemon/plugins/color" = {
-      night-light-enabled = true;
-    };
-    "org/gnome/desktop/session" = {
-      # Automatic screen blank delay
-      idle-delay = (mkUint32 900);  # 15 minutes
-    };
-    "org/gnome/settings-daemon/plugins/power" = {
-      sleep-inactive-ac-timeout = "nothing";
-      sleep-inactive-battery-timeout = 1800;  # 30 minutes
-    };
-    "org/gnome/shell" = {
-      last-selected-power-profile = "performance";
-    };
-    "org/gnome/GWeather4" = {
-      temperature-unit = "centigrade";
-    };
-    "org/gnome/shell/weather" = {
-      locations = weather-locations;
-    };
-    "org/gnome/Weather" = {
-      locations = weather-locations;
-    };
-    "org/gnome/clocks" = {
-      world-clocks = [
-        [ (mkDictionaryEntry [ "location"
-          (mkVariant (mkTuple [
-            (mkUint32 2)
-            (mkVariant (mkTuple [
-              "Seattle"
-              "KBFI"
-              true
-              [ (mkTuple [
-                  (mkDouble "0.82983133145337307")
-                  (mkDouble "-2.134775231953554")
-              ])]
-              [ (mkTuple [
-                  (mkDouble "0.83088509144255718")
-                  (mkDouble "-2.135097419733472")
-              ])]
-            ]))
-          ]))
-        ])]
-      ];
+  programs.firefox = {
+    enable = true;
+  };
+
+  programs.vesktop = {
+    enable = true;
+  };
+
+  programs.helix = {
+    enable = true;
+    defaultEditor = true;
+    settings = {
+      editor = {
+        scrolloff = 10;
+        scroll-lines = 1;
+        line-number = "relative";
+        bufferline = "multiple";
+        color-modes = true;
+        default-line-ending = "lf";
+        trim-final-newlines = true;
+        trim-trailing-whitespace = true;
+      };
+      editor.cursor-shape = {
+        normal = "block";
+        insert = "bar";
+        select = "underline";
+      };
+      editor.statusline = {
+        left = [
+          "mode"
+          "spinner"
+        ];
+        center = [
+          "file-name"
+          "read-only-indicator"
+          "file-modification-indicator"
+          "separator"
+          "version-control"
+        ];
+        right = [
+          "diagnostics"
+          "selections"
+          "register"
+          "position"
+          "position-percentage"
+          "file-encoding"
+        ];
+      };
     };
   };
 }

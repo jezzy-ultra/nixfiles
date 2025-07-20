@@ -7,7 +7,13 @@
 
   system.stateVersion = attrs.stateVersion;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  # Disable channels since we're using a flake.
+  nix.channel.enable = false;
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -47,6 +53,14 @@
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/.local/share";
     XDG_STATE_HOME = "$HOME/.local/state";
+
+    # Hint Electron apps to use Wayland.
+    NIXOS_OZONE_WL = "1";
+  };
+
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
   };
 
   #services.xserver.enable = true;
@@ -69,6 +83,17 @@
     # Use the example session manager (no others are packaged yet so this is
     # enabled by default, no need to redefine it in your config for now).
     #media-session.enable = true;
+
+    # FIXME
+    # Fix audio crackling in Deltarune...?
+    extraConfig.pipewire."92-low-latency" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 500;
+        "default.clock.min-quantum" = 500;
+        "default.clock.max-quantum" = 500;
+      };
+    };
   };
 
   #services.openssh.enable = true;
@@ -78,18 +103,22 @@
 
   services.printing.enable = true;
 
-  #programs.gnupg.agent = {
-  #  enable = true;
-  #  enableSSHSupport = true;
-  #};
-
-  programs.dconf.enable = true;
-
   nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search <package>
-  environment.systemPackages = with pkgs; [  ];
+  environment.systemPackages = with pkgs; [ ];
+
+  programs.fish.enable = true;
+
+  programs.command-not-found.enable = true;
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+  };
 
   # Don't forget to set a password with `passwd`.
   users.users.${attrs.username} = {
@@ -101,6 +130,13 @@
     ];
   };
 
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.${attrs.username} = ./home.nix;
+    extraSpecialArgs = { inherit attrs; };
+  };
+
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
@@ -109,4 +145,32 @@
       nerd-fonts.jetbrains-mono
     ];
   };
+
+  #stylix = {
+  #  enable = true;
+  #  base16Scheme = {
+  #    system = "base16";
+  #    name = "cutiepro";
+  #    author = "jezzy jumble (https://github.com/jezzy-ultra)";
+  #    variant = "dark";
+  #    palette = {
+  #      base00 = "#000000";
+  #      base01 = "#f56e7f";
+  #      base02 = "#bec975";
+  #      base03 = "#f58669";
+  #      base04 = "#42d9c5";
+  #      base05 = "#d286b7";
+  #      base06 = "#37cb8a";
+  #      base07 = "#88847f";
+  #      base08 = "#2e2a27";
+  #      base09 = "#e5a1a3";
+  #      base0A = "#e8d6a7";
+  #      base0B = "#f3b061";
+  #      base0C = "#80c5de";
+  #      base0D = "#c3a6cb";
+  #      base0E = "#9ed7a8";
+  #      base0F = "#d7c3ba";
+  #    };
+  #  };
+  #};
 }

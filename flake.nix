@@ -7,10 +7,23 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flake-programs-sqlite = {
+      url = "github:wamserma/flake-programs-sqlite";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, home-manager, ... }@inputs:
-  let
+  outputs = {
+    nixpkgs,
+    home-manager,
+    stylix,
+    flake-programs-sqlite,
+    ...
+  } @ inputs: let
     attrs = {
       stateVersion = "25.05";
       hostname = "Jezzlappy";
@@ -22,12 +35,9 @@
       specialArgs = { inherit inputs attrs; };
       modules = [
         ./configuration.nix
-        home-manager.nixosModules.home-manager {
-          home-manager.extraSpecialArgs = { inherit attrs; };
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.${attrs.username} = ./home.nix;
-        }
+        home-manager.nixosModules.home-manager
+        stylix.nixosModules.stylix
+        flake-programs-sqlite.nixosModules.programs-sqlite
       ];
     };
   };
