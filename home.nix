@@ -7,6 +7,8 @@
   home.packages = with pkgs; [
     gtrash
     vivaldi
+    fusee-nano
+    rustup
   ];
 
   wayland.windowManager.hyprland = {
@@ -65,6 +67,9 @@
 
   programs.fish = {
     enable = true;
+    shellAbbrs = {
+      tp = "gtrash put";
+    };
     shellAliases = let
       eza = lib.concatStringsSep " " [
         "eza"
@@ -87,6 +92,7 @@
       la = eza + " --all";
       lt = eza + " --tree";
       lta = eza + " --all --tree";
+      rm = "echo 'Are you sure? Use `command rm` to permanently delete something.'";
     };
   };
   # Use fish as the default interactive shell while keeping
@@ -114,44 +120,46 @@
     installVimSyntax = true;
 
     settings = {
-      theme = "cutiepro";
+      # theme = "cutiepro";
+      minimum-contrast = 1;
     };
-    themes = {
-      cutiepro = {
-        palette = [
-          "00=#000000"  # ANSI 00 -- black
-          "01=#fb5858"  # ANSI 01 -- red
-          "02=#e6c56e"  # ANSI 02 -- green
-          "03=#ff8358"  # ANSI 03 -- yellow
-          "04=#d884ba"  # ANSI 04 -- blue
-          "05=#ff40a0"  # ANSI 05 -- magenta
-          "06=#55afe6"  # ANSI 06 -- cyan
-          "07=#d5d0c9"  # ANSI 07 -- white
-          "08=#88847f"  # ANSI 08 -- bright black
-          "09=#ff9797"  # ANSI 09 -- bright red
-          "10=#ffe08e"  # ANSI 10 -- bright green
-          "11=#ffaa77"  # ANSI 11 -- bright yellow
-          "12=#ffa2dd"  # ANSI 12 -- bright blue
-          "13=#ff6dc4"  # ANSI 13 -- bright magenta
-          "14=#a0c3f2"  # ANSI 14 -- bright cyan
-          "15=#ffffff"  # ANSI 15 -- bright white
-        ];
-        background = "#1c1b1a";
-        foreground = "#d5d0c9";
-        selection-background = "#383838";
-        selection-foreground = "#e5a1a3";
-        cursor-color = "#e5a1a3";
-      };
-    };
+    # themes = {
+    #   cutiepro = {
+    #     palette = [
+    #       "00=#181716"  # blackboard / black
+    #       "08=#88847f"  # elephant / bright black
+    #       "01=#f56e7f"  # rose / red
+    #       "09=#f56e7f"  # rose / bright red
+    #       "02=#e5a1a3"  # cherry blossom / green
+    #       "10=#e5a1a3"  # cherry blossom / bright green
+    #       "03=#bec975"  # sour apple / yellow
+    #       "11=#bec975"  # sour apple / bright yellow
+    #       "04=#f3b061"  # creamsicle / blue
+    #       "12=#f3b061"  # creamsicle / bright blue
+    #       "05=#c69ed1"  # lilac / magenta
+    #       "13=#c69ed1"  # lilac / bright magenta
+    #       "06=#80c5de"  # sky / cyan
+    #       "14=#80c5de"  # sky / bright cyan
+    #       "07=#d5d0c9"  # chalk / white
+    #       "15=#d5d0c9"  # chalk / bright white
+    #     ];
+    #     background = "#181716";  # blackboard
+    #     foreground = "#e8d6a7";  # honeycomb
+    #     selection-background = "#e8d6a7";  # honeycomb
+    #     selection-foreground = "#181716";  # blackboard
+    #     cursor-color = "#e5a1a3";  # cherry blossom
+    #   };
+    # };
   };
 
   programs.kitty = {
     enable = true;
-    #font = {
-    #  # Use the package from our NixOS module.
-    #  package = null;
-    #  name = "JetBrainsMono Nerd Font";
-    #};
+  #   font = {
+  #     # Use the package from our NixOS module.
+  #     package = null;
+  #     name = "JetBrainsMono Nerd Font";
+  #     size = 12;
+  #   };
   };
 
   programs.git = {
@@ -165,6 +173,9 @@
       };
       core = {
         eol = "lf";
+      };
+      push = {
+        default = "current";
       };
     };
   };
@@ -184,43 +195,59 @@
   programs.helix = {
     enable = true;
     defaultEditor = true;
-    settings = {
-      editor = {
-        scrolloff = 10;
-        scroll-lines = 1;
-        line-number = "relative";
-        bufferline = "multiple";
-        color-modes = true;
-        default-line-ending = "lf";
-        trim-final-newlines = true;
-        trim-trailing-whitespace = true;
-      };
-      editor.cursor-shape = {
-        normal = "block";
-        insert = "bar";
-        select = "underline";
-      };
-      editor.statusline = {
-        left = [
-          "mode"
-          "spinner"
-        ];
-        center = [
-          "file-name"
-          "read-only-indicator"
-          "file-modification-indicator"
-          "separator"
-          "version-control"
-        ];
-        right = [
-          "diagnostics"
-          "selections"
-          "register"
-          "position"
-          "position-percentage"
-          "file-encoding"
-        ];
-      };
-    };
+    # settings = {
+    #   theme = "catppuccin_macchiato";
+    #   editor = {
+    #     scrolloff = 10;
+    #     cursorline = true;
+    #     scroll-lines = 1;
+    #     line-number = "relative";
+    #     bufferline = "multiple";
+    #     color-modes = true;
+    #     default-line-ending = "lf";
+    #     trim-final-newlines = true;
+    #     trim-trailing-whitespace = true;
+    #   };
+    #   editor.cursor-shape = {
+    #     normal = "block";
+    #     insert = "bar";
+    #     select = "underline";
+    #   };
+    #   editor.statusline = {
+    #     left = [
+    #       "mode"
+    #       "spinner"
+    #     ];
+    #     center = [
+    #       "file-name"
+    #       "read-only-indicator"
+    #       "file-modification-indicator"
+    #       "separator"
+    #       "version-control"
+    #     ];
+    #     right = [
+    #       "diagnostics"
+    #       "selections"
+    #       "register"
+    #       "position"
+    #       "position-percentage"
+    #       "file-encoding"
+    #     ];
+    #   };
+    # };
   };
+  xdg.configFile."helix/config.toml".source =
+    ./helix/config.toml;
+  xdg.configFile."helix/themes/cutiepro.toml".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/code/cutiepro/helix/cutiepro.toml";
+
+  xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
+  xdg.configFile."kitty/themes/cutiepro.conf".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/code/cutiepro/kitty/cutiepro.conf";
+
+  programs.fastfetch.enable = true;
+
+  programs.google-chrome.enable = true;
 }

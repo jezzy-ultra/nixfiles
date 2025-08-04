@@ -28,7 +28,7 @@
   #networking.firewall.allowedUDPPorts = [ ... ];
   #networking.firewall.enable = false;
 
-  time.timeZone = "Europe/Helsinki";
+  time.timeZone = "US/Pacific";
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
@@ -107,7 +107,9 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search <package>
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [
+    jetbrains-toolbox
+  ];
 
   programs.fish.enable = true;
 
