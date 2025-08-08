@@ -66,6 +66,7 @@
   #services.xserver.enable = true;
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
+  services.gnome.gnome-browser-connector.enable = true;
   services.xserver.xkb = {
     layout = "us";
     variant = "";
@@ -109,6 +110,8 @@
   # $ nix search <package>
   environment.systemPackages = with pkgs; [
     jetbrains-toolbox
+    gcc
+    chezmoi
   ];
 
   programs.fish.enable = true;
@@ -121,6 +124,11 @@
     dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
   };
+
+  nix.settings.trusted-users = [
+    "root"
+    "@wheel"
+  ];
 
   # Don't forget to set a password with `passwd`.
   users.users.${attrs.username} = {

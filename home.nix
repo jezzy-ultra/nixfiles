@@ -9,6 +9,7 @@
     vivaldi
     fusee-nano
     rustup
+    tombi
   ];
 
   wayland.windowManager.hyprland = {
@@ -236,11 +237,11 @@
     #   };
     # };
   };
-  xdg.configFile."helix/config.toml".source =
-    ./helix/config.toml;
+  xdg.configFile."helix/config.toml".source = ./helix/config.toml;
   xdg.configFile."helix/themes/cutiepro.toml".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/code/cutiepro/helix/cutiepro.toml";
+  xdg.configFile."helix/languages.toml".source = ./helix/languages.toml;
 
   xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
   xdg.configFile."kitty/themes/cutiepro.conf".source =

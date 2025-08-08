@@ -17,6 +17,10 @@ normal = "block"
 insert = "bar"
 select = "underline"
 
+[editor.lsp]
+display-progress-messages = true
+display-inlay-hints = true
+
 [editor.statusline]
 left = [
   "mode",
