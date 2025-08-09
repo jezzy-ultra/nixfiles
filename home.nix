@@ -256,6 +256,7 @@
   dconf.settings = {
     "org/gnome/desktop/applications/terminal" = {
       exec = "kitty";
+      exec-arg = null;
     };
   };
 }
