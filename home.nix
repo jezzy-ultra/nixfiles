@@ -10,6 +10,7 @@
     fusee-nano
     rustup
     tombi
+    xdg-terminal-exec
   ];
 
   wayland.windowManager.hyprland = {
@@ -116,7 +117,7 @@
   };
 
   programs.ghostty = {
-    enable = true;
+    enable = false;
     installBatSyntax = true;
     installVimSyntax = true;
 
@@ -251,4 +252,10 @@
   programs.fastfetch.enable = true;
 
   programs.google-chrome.enable = true;
+
+  dconf.settings = {
+    "org/gnome/desktop/applications/terminal" = {
+      exec = "kitty";
+    };
+  };
 }
