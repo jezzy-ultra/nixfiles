@@ -5,9 +5,9 @@
     homeDirectory = "/home/" + attrs.username;
   };
   home.packages = with pkgs; [
+    kitty
     gtrash
     vivaldi
-    fusee-nano
     rustup
     tombi
     xdg-terminal-exec
