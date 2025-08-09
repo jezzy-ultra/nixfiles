@@ -238,16 +238,16 @@
     #   };
     # };
   };
-  xdg.configFile."helix/config.toml".source = ./helix/config.toml;
-  xdg.configFile."helix/themes/cutiepro.toml".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/code/cutiepro/helix/cutiepro.toml";
-  xdg.configFile."helix/languages.toml".source = ./helix/languages.toml;
+  # xdg.configFile."helix/config.toml".source = ./helix/config.toml;
+  # xdg.configFile."helix/themes/cutiepro.toml".source =
+  #   config.lib.file.mkOutOfStoreSymlink
+  #     "${config.home.homeDirectory}/code/cutiepro/helix/cutiepro.toml";
+  # xdg.configFile."helix/languages.toml".source = ./helix/languages.toml;
 
-  xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
-  xdg.configFile."kitty/themes/cutiepro.conf".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/code/cutiepro/kitty/cutiepro.conf";
+  # xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
+  # xdg.configFile."kitty/themes/cutiepro.conf".source =
+  #   config.lib.file.mkOutOfStoreSymlink
+  #     "${config.home.homeDirectory}/code/cutiepro/kitty/cutiepro.conf";
 
   programs.fastfetch.enable = true;
 
@@ -258,4 +258,12 @@
       exec = "kitty";
     };
   };
+
+  home.activation.chezmoi = lib.hm.dag.entryAfter ["installPackages"] ''
+    PATH="${pkgs.chezmoi}/bin:${pkgs.git}/bin:${pkgs.git-lfs}/bin:''${PATH}"
+
+    $DRY_RUN_CMD chezmoi -S ~/code/dotfiles init git@github.com:jezzy-ultra/dotfiles.git
+    $DRY_RUN_CMD chezmoi update
+    $DRY_RUN_CMD chezmoi git status
+  ''
 }
