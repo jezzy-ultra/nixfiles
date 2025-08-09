@@ -145,6 +145,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    backupFileExtension = "hmbackup";
     users.${attrs.username} = ./home.nix;
     extraSpecialArgs = { inherit attrs; };
   };

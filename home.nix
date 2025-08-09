@@ -154,15 +154,15 @@
     # };
   };
 
-  programs.kitty = {
-    enable = true;
+  # programs.kitty = {
+  #   enable = true;
   #   font = {
   #     # Use the package from our NixOS module.
   #     package = null;
   #     name = "JetBrainsMono Nerd Font";
   #     size = 12;
   #   };
-  };
+  # };
 
   programs.git = {
     enable = true;
@@ -262,8 +262,11 @@
   home.activation.chezmoi = lib.hm.dag.entryAfter ["installPackages"] ''
     PATH="${pkgs.chezmoi}/bin:${pkgs.git}/bin:${pkgs.git-lfs}/bin:''${PATH}"
 
-    $DRY_RUN_CMD chezmoi -S ~/code/dotfiles init git@github.com:jezzy-ultra/dotfiles.git
+    $DRY_RUN_CMD chezmoi -S ~/code/dotfiles init https://github.com/jezzy-ultra/dotfiles.git
     $DRY_RUN_CMD chezmoi update
     $DRY_RUN_CMD chezmoi git status
-  ''
+    $DRY_RUN_CMD cd ~/code/dotfiles
+    $DRY_RUN_CMD git remote set-url --push origin git@github.com:jezzy-ultra/dotfiles.git
+    $DRY_RUN_CMD cd -
+  '';
 }
