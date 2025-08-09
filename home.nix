@@ -94,6 +94,8 @@
       la = eza + " --all";
       lt = eza + " --tree";
       lta = eza + " --all --tree";
+      lg = eza + " --git-repos";
+      # FIXME
       rm = "echo 'Are you sure? Use `command rm` to permanently delete something.'";
     };
   };
