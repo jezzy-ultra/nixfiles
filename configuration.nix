@@ -47,6 +47,7 @@
     # (e.g. Chromium/Electron).
     FREETYPE_PROPERTIES =
       "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
+    EDITOR = "hx";
   };
   environment.sessionVariables = {
     XDG_CACHE_HOME = "$HOME/.cache";
@@ -58,19 +59,35 @@
     NIXOS_OZONE_WL = "1";
   };
 
-  programs.hyprland = {
+  # programs.hyprland = {
+  #   enable = true;
+  #   withUWSM = true;
+  # };
+
+  programs.nh = {
     enable = true;
-    withUWSM = true;
+    flake = "/home/${attrs.username}/code/nixfiles";
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 7d --keep 3";
+    };
   };
 
-  #services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
-  services.gnome.gnome-browser-connector.enable = true;
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
-  };
+  # services.xserver.enable = true;
+  # services.displayManager.gdm.enable = true;
+  # services.desktopManager.gnome.enable = true;
+  # services.gnome.gnome-browser-connector.enable = true;
+
+  services.displayManager.sddm.enable = true;
+  services.displayManager.sddm.wayland.enable = true;
+  services.desktopManager.plasma6.enable = true;
+
+  services.geoclue2.enable = true;
+
+  # services.xserver.xkb = {
+  #   layout = "us";
+  #   variant = "";
+  # };
 
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -112,6 +129,9 @@
     jetbrains-toolbox
     gcc
     chezmoi
+    unzip
+    wl-clipboard
+    lldb
   ];
 
   programs.dconf.enable = true;
@@ -145,6 +165,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    backupFileExtension = "hmbackup";
     users.${attrs.username} = ./home.nix;
     extraSpecialArgs = { inherit attrs; };
   };
@@ -154,6 +175,7 @@
     packages = with pkgs; [
       noto-fonts
       noto-fonts-emoji
+      jetbrains-mono
       nerd-fonts.jetbrains-mono
     ];
   };

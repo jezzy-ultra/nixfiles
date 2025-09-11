@@ -1,6 +1,0 @@
-[[language]]
-name = "markdown"
-# soft-wrap.enable = true
-
-[language-server.rust-analyzer.config.cargo]
-features = "all"

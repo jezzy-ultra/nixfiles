@@ -5,35 +5,34 @@
     homeDirectory = "/home/" + attrs.username;
   };
   home.packages = with pkgs; [
+    kitty
     gtrash
     vivaldi
-    fusee-nano
     rustup
     tombi
+    fish-lsp
+    marksman
+    yaml-language-server
+    vscode-langservers-extracted
+    dprint
+    dprint-plugins.dprint-plugin-markdown
     xdg-terminal-exec
+    carapace
+    web-ext
   ];
 
-  wayland.windowManager.hyprland = {
-    enable = true;
+  # wayland.windowManager.hyprland = {
+  #   enable = true;
 
-    # Use the packages from our NixOS module.
-    package = null;
-    portalPackage = null;
+  #   # Use the packages from our NixOS module.
+  #   package = null;
+  #   portalPackage = null;
 
-    systemd.variables = [ "--all" ];
-  };
-  xdg.configFile."uwsm/env".source = ''
-    ${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh
-  '';
-
-  programs.nh = {
-    enable = true;
-    flake = "/home/${attrs.username}/code/nixfiles";
-    clean = {
-      enable = true;
-      extraArgs = "--keep-since 7d --keep 3";
-    };
-  };
+  #   systemd.variables = [ "--all" ];
+  # };
+  # xdg.configFile."uwsm/env".source = ''
+  #   ${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh
+  # '';
 
   programs.eza = {
     enable = true;
@@ -65,56 +64,66 @@
 
   programs.bat = {
     enable = true;
+    extraPackages = with pkgs.bat-extras; [
+      batdiff
+      batgrep
+      batman
+      batpipe
+      batwatch
+      prettybat
+    ];
   };
 
-  programs.fish = {
-    enable = true;
-    shellAbbrs = {
-      tp = "gtrash put";
-    };
-    shellAliases = let
-      eza = lib.concatStringsSep " " [
-        "eza"
-        "--color=always"
-        "--icons=always"
-        "--git"
-        "--long"
-        "--no-permissions"
-        "--octal-permissions"
-        "--group-directories-first"
-        "--classify=always"
-        "--hyperlink"
-        "--mounts"
-        "--follow-symlinks"
-        "--smart-group"
-        "--time-style=+'%Y-%m-%dx\n%m-%d %H:%M'"
-      ];
-    in {
-      ls = eza;
-      la = eza + " --all";
-      lt = eza + " --tree";
-      lta = eza + " --all --tree";
-      rm = "echo 'Are you sure? Use `command rm` to permanently delete something.'";
-    };
-  };
+  # programs.fish = {
+  #  enable = true;
+  #   shellAbbrs = {
+  #     tp = "gtrash put";
+  #   };
+  #   shellAliases = let
+  #     eza = lib.concatStringsSep " " [
+  #       "eza"
+  #       "--color=always"
+  #       "--icons=always"
+  #       "--git"
+  #       "--long"
+  #       "--no-permissions"
+  #       "--octal-permissions"
+  #       "--group-directories-first"
+  #       "--classify=always"
+  #       "--hyperlink"
+  #       "--mounts"
+  #       "--follow-symlinks"
+  #       "--smart-group"
+  #       "--time-style=+'%Y-%m-%dx\n%m-%d %H:%M'"
+  #     ];
+  #   in {
+  #     ls = eza;
+  #     la = eza + " --all";
+  #     lt = eza + " --tree";
+  #     lta = eza + " --all --tree";
+  #     lg = eza + " --git-repos";
+  #     # FIXME
+  #     rm = "echo 'Are you sure? Use `command rm` to permanently delete something.'";
+  #   };
+  # };
   # Use fish as the default interactive shell while keeping
   # the login shell POSIX-compliant for compatibility reasons.
-  programs.bash = {
-    enable = true;
-    initExtra = ''
-      if [[ $- == *i* && -z "$NO_FISH_BASH" ]]; then
-        exec ${pkgs.fish}/bin/fish
-      fi
-    '';
-  };
-  # Avoid endlessly looping from bash -> fish -> bash -> ...
-  programs.fish.functions.bash = {
-    description = "Start bash (without automatically re-entering fish).";
-    body = ''
-      NO_FISH_BASH="1" command bash $argv
-    '';
-    wraps = "bash";
-  };
+  # programs.bash = {
+  #   enable = true;
+  #   initExtra = ''
+  #     if [[ $- == *i* && -z "$NO_FISH_BASH" ]]; then
+  #       exec ${pkgs.fish}/bin/fish
+  #     fi
+  #   '';
+  # };
+  # # Avoid endlessly looping from bash -> fish -> bash -> ...
+  # programs.fish.functions.bash = {
+  #   description = "Start bash (without automatically re-entering fish).";
+  #   body = ''
+  #     NO_FISH_BASH="1" command bash $argv
+  #   '';
+  #   wraps = "bash";
+  # };
 
   programs.ghostty = {
     enable = false;
@@ -154,15 +163,15 @@
     # };
   };
 
-  programs.kitty = {
-    enable = true;
+  # programs.kitty = {
+  #   enable = true;
   #   font = {
   #     # Use the package from our NixOS module.
   #     package = null;
   #     name = "JetBrainsMono Nerd Font";
   #     size = 12;
   #   };
-  };
+  # };
 
   programs.git = {
     enable = true;
@@ -238,20 +247,25 @@
     #   };
     # };
   };
-  xdg.configFile."helix/config.toml".source = ./helix/config.toml;
-  xdg.configFile."helix/themes/cutiepro.toml".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/code/cutiepro/helix/cutiepro.toml";
-  xdg.configFile."helix/languages.toml".source = ./helix/languages.toml;
+  # xdg.configFile."helix/config.toml".source = ./helix/config.toml;
+  # xdg.configFile."helix/themes/cutiepro.toml".source =
+  #   config.lib.file.mkOutOfStoreSymlink
+  #     "${config.home.homeDirectory}/code/cutiepro/helix/cutiepro.toml";
+  # xdg.configFile."helix/languages.toml".source = ./helix/languages.toml;
 
-  xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
-  xdg.configFile."kitty/themes/cutiepro.conf".source =
-    config.lib.file.mkOutOfStoreSymlink
-      "${config.home.homeDirectory}/code/cutiepro/kitty/cutiepro.conf";
+  # xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
+  # xdg.configFile."kitty/themes/cutiepro.conf".source =
+  #   config.lib.file.mkOutOfStoreSymlink
+  #     "${config.home.homeDirectory}/code/cutiepro/kitty/cutiepro.conf";
 
   programs.fastfetch.enable = true;
 
   programs.google-chrome.enable = true;
+
+  programs.starship.enable = true;
+  programs.oh-my-posh.enable = true;
+
+  programs.gh.enable = true;
 
   dconf.settings = {
     "org/gnome/desktop/applications/terminal" = {
@@ -259,4 +273,17 @@
       exec-arg = null;
     };
   };
+
+  home.activation.chezmoi = lib.hm.dag.entryAfter ["installPackages"] ''
+    PATH="${pkgs.chezmoi}/bin:${pkgs.git}/bin:${pkgs.git-lfs}/bin:${pkgs.fish}/bin:''${PATH}"
+
+    $DRY_RUN_CMD chezmoi -S ~/code/dotfiles init https://github.com/jezzy-ultra/dotfiles.git
+    $DRY_RUN_CMD chezmoi update
+    $DRY_RUN_CMD chezmoi git status
+    $DRY_RUN_CMD cd ~/code/dotfiles
+    $DRY_RUN_CMD git remote set-url --push origin git@github.com:jezzy-ultra/dotfiles.git
+    $DRY_RUN_CMD cd -
+
+    $DRY_RUN_CMD fish -c fisher update
+  '';
 }
