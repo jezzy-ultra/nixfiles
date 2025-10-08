@@ -1,17 +1,22 @@
-{ pkgs, attrs, ... }:
+{
+  pkgs,
+  inputs,
+  attrs,
+  ...
+}:
 {
   imports = [
-    ./hardware-configuration.nix  # results of the hardware scan
-    ./kanata.nix  # keyboard remapper
+    ./hardware-configuration.nix # results of the hardware scan
+    ./kanata.nix # keyboard remapper
   ];
 
   system.stateVersion = attrs.stateVersion;
 
+  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
-
   # Disable channels since we're using a flake.
   nix.channel.enable = false;
 
@@ -21,12 +26,6 @@
 
   networking.networkmanager.enable = true;
   networking.hostName = attrs.hostname;
-  #networking.wireless.enable = true;  # wpa_supplicant
-  #networking.proxy.default = "http://user:password@proxy:port/";
-  #networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-  #networking.firewall.allowedTCPPorts = [ ... ];
-  #networking.firewall.allowedUDPPorts = [ ... ];
-  #networking.firewall.enable = false;
 
   time.timeZone = "US/Pacific";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -45,8 +44,7 @@
   environment.variables = {
     # Improve the font rendering in some applications
     # (e.g. Chromium/Electron).
-    FREETYPE_PROPERTIES =
-      "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
+    FREETYPE_PROPERTIES = "cff:no-stem-darkening=0 autofitter:no-stem-darkening=0";
     EDITOR = "hx";
   };
   environment.sessionVariables = {
@@ -59,28 +57,27 @@
     NIXOS_OZONE_WL = "1";
   };
 
-  # programs.hyprland = {
-  #   enable = true;
-  #   withUWSM = true;
-  # };
-
   programs.nh = {
     enable = true;
-    flake = "/home/${attrs.username}/code/nixfiles";
+    flake = "/home/${attrs.username}/src/nixfiles";
     clean = {
       enable = true;
       extraArgs = "--keep-since 7d --keep 3";
     };
   };
 
-  # services.xserver.enable = true;
-  # services.displayManager.gdm.enable = true;
-  # services.desktopManager.gnome.enable = true;
-  # services.gnome.gnome-browser-connector.enable = true;
+  # services.displayManager.cosmic-greeter.enable = true;
+  services.desktopManager.cosmic.enable = true;
+  services.flatpak.enable = true;
 
-  services.displayManager.sddm.enable = true;
-  services.displayManager.sddm.wayland.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  services.xserver.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
+  services.gnome.gnome-browser-connector.enable = true;
+
+  # services.displayManager.sddm.enable = true;
+  # services.displayManager.sddm.wayland.enable = true;
+  # services.desktopManager.plasma6.enable = true;
 
   services.geoclue2.enable = true;
 
@@ -132,11 +129,38 @@
     unzip
     wl-clipboard
     lldb
+    gnome-tweaks
+    # claude-code
+    wezterm
+    nixd
+    simple-completion-language-server
+    nixfmt
+    xclip
+    nodejs
+    pkg-config
+    openssl
+    typescript-language-server
+    superhtml
+    # zed-editor-fhs
+    python3
   ];
+
+  # programs.zed = {
+  #   enable = true;
+  #   package = pkgs.zed-editor-fhs.override {
+  #     shell = "${pkgs.bashInteractive}/bin/bash";
+  #     extraInstallCommands = ''
+  #       mkdir -p $out/etc
+  #       echo "${pkgs.bashInteractive}/bin/bash" > $out/etc/shells
+  #     '';
+  #   };
+  # };
 
   programs.dconf.enable = true;
 
-  programs.fish.enable = true;
+  programs.fish = {
+    enable = true;
+  };
 
   programs.command-not-found.enable = true;
 
@@ -157,7 +181,7 @@
     isNormalUser = true;
     description = attrs.username;
     extraGroups = [
-      "wheel"  # sudo
+      "wheel" # sudo
       "networkmanager"
     ];
   };
@@ -177,6 +201,12 @@
       noto-fonts-emoji
       jetbrains-mono
       nerd-fonts.jetbrains-mono
+      nerd-fonts.symbols-only
+      nerd-fonts._0xproto
+      nerd-fonts.monaspace
+      maple-mono.NF
+      maple-mono.Normal-NF
+      nerd-fonts.fira-code
     ];
   };
 

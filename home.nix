@@ -1,4 +1,9 @@
-{ config, lib, pkgs, attrs, ... }:
+{
+  lib,
+  pkgs,
+  attrs,
+  ...
+}:
 {
   home = {
     inherit (attrs) stateVersion username;
@@ -20,6 +25,15 @@
     carapace
     web-ext
   ];
+
+  programs.zed-editor = {
+    enable = true;
+  };
+
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
 
   # wayland.windowManager.hyprland = {
   #   enable = true;
@@ -188,6 +202,7 @@
       push = {
         default = "current";
       };
+      credential.helper = "${pkgs.gh}/bin/gh auth git-credential";
     };
   };
 
@@ -250,13 +265,13 @@
   # xdg.configFile."helix/config.toml".source = ./helix/config.toml;
   # xdg.configFile."helix/themes/cutiepro.toml".source =
   #   config.lib.file.mkOutOfStoreSymlink
-  #     "${config.home.homeDirectory}/code/cutiepro/helix/cutiepro.toml";
+  #     "${config.home.homeDirectory}/src/cutiepro/helix/cutiepro.toml";
   # xdg.configFile."helix/languages.toml".source = ./helix/languages.toml;
 
   # xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
   # xdg.configFile."kitty/themes/cutiepro.conf".source =
   #   config.lib.file.mkOutOfStoreSymlink
-  #     "${config.home.homeDirectory}/code/cutiepro/kitty/cutiepro.conf";
+  #     "${config.home.homeDirectory}/src/cutiepro/kitty/cutiepro.conf";
 
   programs.fastfetch.enable = true;
 
@@ -270,20 +285,18 @@
   dconf.settings = {
     "org/gnome/desktop/applications/terminal" = {
       exec = "kitty";
-      exec-arg = null;
+      # exec-arg = null;
     };
   };
 
-  home.activation.chezmoi = lib.hm.dag.entryAfter ["installPackages"] ''
-    PATH="${pkgs.chezmoi}/bin:${pkgs.git}/bin:${pkgs.git-lfs}/bin:${pkgs.fish}/bin:''${PATH}"
+  # home.activation.chezmoi = lib.hm.dag.entryAfter [ "installPackages" ] ''
+  #   PATH="${pkgs.chezmoi}/bin:${pkgs.git}/bin:${pkgs.git-lfs}/bin:${pkgs.fish}/bin:''${PATH}"
 
-    $DRY_RUN_CMD chezmoi -S ~/code/dotfiles init https://github.com/jezzy-ultra/dotfiles.git
-    $DRY_RUN_CMD chezmoi update
-    $DRY_RUN_CMD chezmoi git status
-    $DRY_RUN_CMD cd ~/code/dotfiles
-    $DRY_RUN_CMD git remote set-url --push origin git@github.com:jezzy-ultra/dotfiles.git
-    $DRY_RUN_CMD cd -
-
-    $DRY_RUN_CMD fish -c fisher update
-  '';
+  #   $DRY_RUN_CMD chezmoi -S ~/src/dotfiles init https://github.com/jezzy-ultra/dotfiles.git
+  #   $DRY_RUN_CMD chezmoi update
+  #   $DRY_RUN_CMD chezmoi git status
+  #   $DRY_RUN_CMD cd ~/src/dotfiles
+  #   $DRY_RUN_CMD git remote set-url --push origin git@github.com:jezzy-ultra/dotfiles.git
+  #   $DRY_RUN_CMD cd -
+  # '';
 }
