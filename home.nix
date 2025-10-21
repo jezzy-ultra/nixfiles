@@ -15,6 +15,7 @@
     vivaldi
     rustup
     tombi
+    # taplo
     fish-lsp
     marksman
     yaml-language-server
@@ -28,11 +29,6 @@
 
   programs.zed-editor = {
     enable = true;
-  };
-
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
   };
 
   # wayland.windowManager.hyprland = {

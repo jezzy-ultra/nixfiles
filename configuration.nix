@@ -143,7 +143,22 @@
     superhtml
     # zed-editor-fhs
     python3
+    mpls
+    deno
+    lemminx
+    biome
+    socat
+    bubblewrap
   ];
+
+  programs.direnv = {
+    enable = true;
+    # silent = true;
+    nix-direnv = {
+      enable = true;
+      package = pkgs.nix-direnv;
+    };
+  };
 
   # programs.zed = {
   #   enable = true;
