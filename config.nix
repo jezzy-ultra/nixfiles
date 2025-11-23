@@ -3,8 +3,7 @@
   inputs,
   attrs,
   ...
-}:
-{
+}: {
   imports = [
     ./hardware.nix # results of the hardware scan
     ./kanata.nix # keyboard remapper
@@ -12,7 +11,7 @@
 
   system.stateVersion = attrs.stateVersion;
 
-  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+  nix.nixPath = ["nixpkgs=${inputs.nixpkgs}"];
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -67,18 +66,13 @@
   };
 
   # services.displayManager.cosmic-greeter.enable = true;
-  services.desktopManager.cosmic.enable = true;
-  services.flatpak.enable = true;
+  # services.desktopManager.cosmic.enable = true;
+  # services.flatpak.enable = true;
 
-  services.xserver.enable = true;
+  # services.xserver.enable = true;
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
   services.gnome.gnome-browser-connector.enable = true;
-
-  # services.displayManager.sddm.enable = true;
-  # services.displayManager.sddm.wayland.enable = true;
-  # services.desktopManager.plasma6.enable = true;
-
   services.geoclue2.enable = true;
 
   # services.xserver.xkb = {
@@ -93,14 +87,9 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    #jack.enable = true;
+    # jack.enable = true;
 
-    # Use the example session manager (no others are packaged yet so this is
-    # enabled by default, no need to redefine it in your config for now).
-    #media-session.enable = true;
-
-    # FIXME
-    # Fix audio crackling in Deltarune...?
+    # FIXME: fix audio crackling in Deltarune...?
     extraConfig.pipewire."92-low-latency" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
@@ -111,12 +100,9 @@
     };
   };
 
-  #services.openssh.enable = true;
+  # services.openssh.enable = true;
 
-  # Enable touchpad support (enabled by default in most desktop managers).
-  #services.xserver.libinput.enable = true;
-
-  services.printing.enable = true;
+  # services.printing.enable = true;
 
   nixpkgs.config.allowUnfree = true;
 
@@ -149,6 +135,25 @@
     biome
     socat
     bubblewrap
+    kitty
+    gtrash
+    vivaldi
+    rustup
+    tombi
+    # taplo
+    fish-lsp
+    marksman
+    yaml-language-server
+    vscode-langservers-extracted
+    dprint
+    dprint-plugins.dprint-plugin-markdown
+    xdg-terminal-exec
+    carapace
+    web-ext
+    alejandra
+    graphviz
+    tree
+    xxd
   ];
 
   programs.direnv = {
@@ -206,50 +211,15 @@
     useUserPackages = true;
     backupFileExtension = "hmbackup";
     users.${attrs.username} = ./home.nix;
-    extraSpecialArgs = { inherit attrs; };
+    extraSpecialArgs = {inherit attrs;};
   };
 
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
       noto-fonts
-      noto-fonts-emoji
-      jetbrains-mono
+      noto-fonts-color-emoji
       nerd-fonts.jetbrains-mono
-      nerd-fonts.symbols-only
-      nerd-fonts._0xproto
-      nerd-fonts.monaspace
-      maple-mono.NF
-      maple-mono.Normal-NF
-      nerd-fonts.fira-code
     ];
   };
-
-  #stylix = {
-  #  enable = true;
-  #  base16Scheme = {
-  #    system = "base16";
-  #    name = "cutiepro";
-  #    author = "jezzy jumble (https://github.com/jezzy-ultra)";
-  #    variant = "dark";
-  #    palette = {
-  #      base00 = "#000000";
-  #      base01 = "#f56e7f";
-  #      base02 = "#bec975";
-  #      base03 = "#f58669";
-  #      base04 = "#42d9c5";
-  #      base05 = "#d286b7";
-  #      base06 = "#37cb8a";
-  #      base07 = "#88847f";
-  #      base08 = "#2e2a27";
-  #      base09 = "#e5a1a3";
-  #      base0A = "#e8d6a7";
-  #      base0B = "#f3b061";
-  #      base0C = "#80c5de";
-  #      base0D = "#c3a6cb";
-  #      base0E = "#9ed7a8";
-  #      base0F = "#d7c3ba";
-  #    };
-  #  };
-  #};
 }

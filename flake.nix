@@ -1,14 +1,10 @@
 {
-  description = "jezzy's NixOS configuration";
+  description = "jezzy's nixos config";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    stylix = {
-      url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-programs-sqlite = {
@@ -20,7 +16,6 @@
   outputs = {
     nixpkgs,
     home-manager,
-    stylix,
     flake-programs-sqlite,
     ...
   } @ inputs: let
@@ -32,11 +27,10 @@
   in {
     nixosConfigurations.${attrs.hostname} = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = { inherit inputs attrs; };
+      specialArgs = {inherit inputs attrs;};
       modules = [
         ./config.nix
         home-manager.nixosModules.home-manager
-        stylix.nixosModules.stylix
         flake-programs-sqlite.nixosModules.programs-sqlite
       ];
     };
