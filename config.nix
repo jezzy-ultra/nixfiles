@@ -6,7 +6,7 @@
 }:
 {
   imports = [
-    ./hardware-configuration.nix # results of the hardware scan
+    ./hardware.nix # results of the hardware scan
     ./kanata.nix # keyboard remapper
   ];
 

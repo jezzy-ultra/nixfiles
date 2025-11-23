@@ -34,7 +34,7 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs attrs; };
       modules = [
-        ./configuration.nix
+        ./config.nix
         home-manager.nixosModules.home-manager
         stylix.nixosModules.stylix
         flake-programs-sqlite.nixosModules.programs-sqlite
