@@ -9,13 +9,12 @@
     homeDirectory = "/home/" + attrs.username;
   };
 
-  programs.zed-editor = {
-    enable = true;
-  };
+  # programs.zed-editor = {
+  #   enable = true;
+  # };
 
   programs.eza = {
     enable = true;
-
     # Disable shell integration to manage aliases ourselves.
     enableFishIntegration = false;
   };
@@ -36,7 +35,6 @@
   programs.ripgrep = {
     enable = true;
   };
-
   programs.ripgrep-all = {
     enable = true;
   };
@@ -70,7 +68,6 @@
       credential.helper = "${pkgs.gh}/bin/gh auth git-credential";
     };
   };
-
   programs.delta = {
     enable = true;
     enableGitIntegration = true;
@@ -91,10 +88,10 @@
 
   programs.fastfetch.enable = true;
 
-  programs.google-chrome.enable = true;
+  # programs.google-chrome.enable = true;
 
   programs.starship.enable = true;
-  programs.oh-my-posh.enable = true;
+  # programs.oh-my-posh.enable = true;
 
   programs.gh.enable = true;
 

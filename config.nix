@@ -5,8 +5,9 @@
   ...
 }: {
   imports = [
-    ./hardware.nix # results of the hardware scan
-    ./kanata.nix # keyboard remapper
+    ./hardware.nix
+    ./kanata.nix
+    ./npm.nix
   ];
 
   system.stateVersion = attrs.stateVersion;
@@ -140,7 +141,6 @@
     vivaldi
     rustup
     tombi
-    # taplo
     fish-lsp
     marksman
     yaml-language-server
